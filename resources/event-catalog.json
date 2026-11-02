@@ -1,0 +1,32 @@
+{
+    "schema_version": 1,
+    "package": "nvl/mail-notification-bridge",
+    "documentation": "docs/events.md",
+    "implementation_status": "implemented; package regressions and independent local SMTP/callback acceptance verified",
+    "events": [],
+    "value_types": [],
+    "aliases": [],
+    "publication": null,
+    "security_notes": [
+        "Verified external callbacks are bound to a configured client and contain delivery identifiers and references, not email bodies or credentials."
+    ],
+    "no_op_semantics": "Identical callback replays do not repeat completed inbox processing; external listener effects still require idempotency.",
+    "notes": [
+        "Laravel integration events are separate from the service-owned mail domain events."
+    ],
+    "no_events_reason": "The consumer bridge owns no local mail-delivery domain lifecycle. It adapts versioned remote delivery callbacks to Laravel listeners.",
+    "integration_events": [
+        {
+            "class": "Nvl\\MailNotificationBridge\\Webhooks\\Events\\MailNotificationReceived",
+            "wire_version": 1,
+            "source": "src/Webhooks/Events/MailNotificationReceived.php",
+            "producer": "src/Webhooks/Jobs/ProcessWebhookReceipt.php",
+            "fields": {
+                "connection": "string",
+                "eventId": "string",
+                "payload": "validated version-1 callback array"
+            },
+            "publication": "Laravel event dispatch from a durably queued, lease-fenced receipt processor."
+        }
+    ]
+}

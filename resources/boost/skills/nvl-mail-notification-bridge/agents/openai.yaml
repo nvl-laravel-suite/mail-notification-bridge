@@ -1,0 +1,4 @@
+interface:
+  display_name: "NVL Mail Notification Bridge"
+  short_description: "Connect Laravel apps to remote mail delivery safely"
+  default_prompt: "Use $nvl-mail-notification-bridge to integrate this Laravel host with the remote mail service, including retry-safe content, scoped history and optional signed callbacks."

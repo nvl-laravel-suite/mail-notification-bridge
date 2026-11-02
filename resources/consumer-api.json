@@ -1,0 +1,170 @@
+{
+    "schema_version": 1,
+    "package": "nvl/mail-notification-bridge",
+    "psr4": {
+        "Nvl\\MailNotificationBridge\\": "src"
+    },
+    "symbols": {
+        "Nvl\\MailNotificationBridge\\Concerns\\HasMailNotifications": {
+            "kind": "trait",
+            "file": "src/Concerns/HasMailNotifications.php",
+            "methods": [
+                "mailNotificationReference",
+                "mailNotificationReferenceType",
+                "mailNotifications"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\Concerns\\SubmitsMailNotifications": {
+            "kind": "trait",
+            "file": "src/Concerns/SubmitsMailNotifications.php",
+            "methods": [
+                "submitMailNotifications",
+                "toMailNotifications"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\MailNotificationsClient": {
+            "kind": "class",
+            "file": "src/MailNotificationsClient.php",
+            "methods": [
+                "__construct",
+                "archiveAsset",
+                "asset",
+                "assets",
+                "cancelMessage",
+                "client",
+                "configuration",
+                "createFlag",
+                "createKey",
+                "createWebhookEndpoint",
+                "deleteFlag",
+                "deleteMarketingOptOut",
+                "deleteWebhookEndpoint",
+                "downloadAsset",
+                "downloadMessageAttachment",
+                "events",
+                "flag",
+                "flags",
+                "keys",
+                "marketingOptOuts",
+                "message",
+                "messageProvider",
+                "messages",
+                "publishAsset",
+                "putMarketingOptOut",
+                "query",
+                "retryMessage",
+                "revokeKey",
+                "rotateWebhookSecret",
+                "send",
+                "sendMultipart",
+                "updateClient",
+                "updateFlag",
+                "updateWebhookEndpoint",
+                "uploadAsset",
+                "webhookDeliveries",
+                "webhookEndpoint",
+                "webhookEndpoints"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\MailNotificationsManager": {
+            "kind": "class",
+            "file": "src/MailNotificationsManager.php",
+            "methods": [
+                "__construct",
+                "configuration",
+                "connection",
+                "connectionName"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\MessagesQuery": {
+            "kind": "class",
+            "file": "src/MessagesQuery.php",
+            "methods": [
+                "__construct",
+                "category",
+                "createdBetween",
+                "forModel",
+                "forRecipient",
+                "forReference",
+                "forReferences",
+                "ids",
+                "language",
+                "lazyAll",
+                "paginate",
+                "status",
+                "statuses",
+                "tag",
+                "type"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\Notifications\\Channels\\MailNotificationsChannel": {
+            "kind": "class",
+            "file": "src/Notifications/Channels/MailNotificationsChannel.php",
+            "methods": [
+                "__construct",
+                "send"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\Notifications\\MailServiceNotification": {
+            "kind": "class",
+            "file": "src/Notifications/MailServiceNotification.php",
+            "methods": [
+                "__construct",
+                "backoff",
+                "toMailNotifications",
+                "via"
+            ],
+            "properties": [
+                "message",
+                "tries"
+            ],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\Notifications\\Messages\\MailNotificationsMessage": {
+            "kind": "class",
+            "file": "src/Notifications/Messages/MailNotificationsMessage.php",
+            "methods": [
+                "__construct",
+                "category",
+                "language",
+                "metadata",
+                "tags",
+                "type"
+            ],
+            "properties": [
+                "connection",
+                "idempotencyKey",
+                "payload"
+            ],
+            "constants": []
+        },
+        "Nvl\\MailNotificationBridge\\Webhooks\\Events\\MailNotificationReceived": {
+            "kind": "class",
+            "file": "src/Webhooks/Events/MailNotificationReceived.php",
+            "methods": [
+                "__construct",
+                "messageId",
+                "references",
+                "type"
+            ],
+            "properties": [
+                "connection",
+                "eventId",
+                "payload"
+            ],
+            "constants": []
+        }
+    }
+}

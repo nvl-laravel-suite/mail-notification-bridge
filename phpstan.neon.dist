@@ -1,0 +1,26 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+
+parameters:
+    bootstrapFiles:
+        - tests/phpstan-bootstrap.php
+
+    phpVersion: 80400
+    excludePaths:
+        analyseAndScan:
+            - .temp/*
+
+    paths:
+        - src
+        - tests/Fixtures
+
+
+    level: max
+
+    checkModelProperties: true
+
+    tmpDir: .temp/phpstan
+
+    viewDirectories:
+        - tests/Fixtures/views

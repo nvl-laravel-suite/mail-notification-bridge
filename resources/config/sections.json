@@ -1,0 +1,28 @@
+{
+    "schema_version": 1,
+    "configs": {
+        "nvl-mail-notification-bridge": {
+            "common": [
+                "connection",
+                "tables.webhook_receipts",
+                "migrations.enabled",
+                "default",
+                "base_url",
+                "token",
+                "connect_timeout",
+                "timeout",
+                "client_id",
+                "webhook_secrets",
+                "connections",
+                "reference_types",
+                "webhooks.enabled",
+                "webhooks.path",
+                "webhooks.queue",
+                "webhooks.connection",
+                "webhooks.tolerance",
+                "webhooks.max_bytes"
+            ],
+            "advanced": []
+        }
+    }
+}

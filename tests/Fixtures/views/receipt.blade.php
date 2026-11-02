@@ -1,0 +1,1 @@
+<html lang="{{ app()->getLocale() }}"><body><h1>{{ app()->getLocale() === 'bg' ? 'Благодарим за поръчката' : 'Thank you for your order' }}</h1><p>Order {{ $orderId }}</p><img src="{{ $message->embedData('qa-image-bytes', 'logo.png', 'image/png') }}" alt="Logo"></body></html>
