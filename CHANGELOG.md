@@ -1,12 +1,14 @@
 # Changelog
 
-## Unreleased
+## [Unreleased]
+
+## [7.0.0] - 2026-11-03
+
+- Adopt the reviewed NVL 7 family for PHP 8.4+ and Laravel 13, with compatible required and optional NVL peers. Review the package upgrade guide before deployment.
 
 - Clarify remote-consumer versus embedded-delivery package selection and responsibility boundaries.
 - Split setup, bilingual Laravel recipes, scoped history, signed callbacks and operations into canonical guides with generated portable skill references.
 - Execute published examples in regressions and verify skill link closure, syntax and aggregate parity.
-
-## 7.0.0 — initial NVL bridge
 
 - Extract the prepared-content consumer SDK into the NVL suite.
 - Preserve HTTP payloads, response envelopes, idempotency and client boundaries.

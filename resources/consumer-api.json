@@ -26,6 +26,15 @@
             "properties": [],
             "constants": []
         },
+        "Nvl\\MailNotificationBridge\\Definitions\\Tables\\MailNotificationBridgeTables": {
+            "kind": "class",
+            "file": "src/Definitions/Tables/MailNotificationBridgeTables.php",
+            "methods": [],
+            "properties": [],
+            "constants": [
+                "WebhookReceipts"
+            ]
+        },
         "Nvl\\MailNotificationBridge\\MailNotificationsClient": {
             "kind": "class",
             "file": "src/MailNotificationsClient.php",

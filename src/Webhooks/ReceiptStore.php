@@ -8,13 +8,14 @@ use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Query\Builder;
+use Nvl\MailNotificationBridge\Definitions\Tables\MailNotificationBridgeTables;
 use Nvl\MailNotificationBridge\Webhooks\Jobs\ProcessWebhookReceipt;
 use Nvl\Support\Config\PackageStorage;
 use Throwable;
 
 class ReceiptStore
 {
-    public const string TABLE = 'nvl_mail_notification_bridge_webhook_receipts';
+    public const string TABLE = MailNotificationBridgeTables::WebhookReceipts;
 
     public const int MAX_ATTEMPTS = 5;
 

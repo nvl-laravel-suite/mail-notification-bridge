@@ -8,6 +8,7 @@ Search for the relevant fully qualified service or contract and read only its ma
 
 - `Nvl\MailNotificationBridge\Concerns\HasMailNotifications`
 - `Nvl\MailNotificationBridge\Concerns\SubmitsMailNotifications`
+- `Nvl\MailNotificationBridge\Definitions\Tables\MailNotificationBridgeTables`
 - `Nvl\MailNotificationBridge\MailNotificationsClient`
 - `Nvl\MailNotificationBridge\MailNotificationsManager`
 - `Nvl\MailNotificationBridge\MessagesQuery`
@@ -40,6 +41,13 @@ public function submitMailNotifications(string $idempotencyKey, array $options=[
 public function toMailNotifications(array $options=[]): array
 @param array<string, mixed> $options
 @return array<string, mixed>
+```
+
+## Nvl\MailNotificationBridge\Definitions\Tables\MailNotificationBridgeTables
+
+```text
+final class Nvl\MailNotificationBridge\Definitions\Tables\MailNotificationBridgeTables
+public const string WebhookReceipts="nvl_mail_notification_bridge_webhook_receipts"
 ```
 
 ## Nvl\MailNotificationBridge\MailNotificationsClient

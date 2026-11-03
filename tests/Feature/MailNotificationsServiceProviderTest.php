@@ -3,8 +3,13 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Client\Request;
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Support\Facades\Http;
 use Nvl\MailNotificationBridge\MailNotificationsClient;
+use Nvl\MailNotificationBridge\Webhooks\Http\ReceiveWebhook;
+use Nvl\MailNotificationBridge\Webhooks\Http\VerifyWebhook;
+use Nvl\MailNotificationBridge\Webhooks\WebhooksServiceProvider;
+use Nvl\Support\Globals\GlobalNames;
 
 beforeEach(function () {
     Http::preventStrayRequests();
@@ -50,4 +55,38 @@ test('an unconfigured consumer can boot but fails before making an API request',
     expect(fn () => app(MailNotificationsClient::class))->toThrow(InvalidArgumentException::class);
 
     Http::assertNothingSent();
+});
+
+test('an opted in callback registers one signed POST route at the configured path', function (): void {
+    app('router')->setRoutes(new RouteCollection);
+    config(['nvl-mail-notification-bridge.webhooks.enabled' => true, 'nvl-mail-notification-bridge.webhooks.path' => 'host/callbacks/mail/{connection?}']);
+    $provider = new WebhooksServiceProvider(app());
+    $provider->boot();
+    $provider->boot();
+    $routes = app('router')->getRoutes();
+    $routes->refreshNameLookups();
+    $route = $routes->getByName('nvl-mail-notification-bridge.webhooks');
+
+    expect($route)->not->toBeNull()
+        ->and($route->methods())->toBe(['POST'])
+        ->and($route->uri())->toBe('host/callbacks/mail/{connection?}')
+        ->and($route->getActionName())->toBe(ReceiveWebhook::class)
+        ->and($route->gatherMiddleware())->toBe([VerifyWebhook::class])
+        ->and($routes->count())->toBe(1);
+});
+
+test('an opted in callback preserves a host route under its reserved name', function (): void {
+    $router = app('router');
+    $router->setRoutes(new RouteCollection);
+    $host = $router->post('host/callbacks/mail', static fn (): string => 'host callback')->name('nvl-mail-notification-bridge.webhooks');
+    $router->getRoutes()->refreshNameLookups();
+    config(['nvl-mail-notification-bridge.webhooks.enabled' => true]);
+
+    (new WebhooksServiceProvider(app()))->boot();
+    $router->getRoutes()->refreshNameLookups();
+
+    expect($router->getRoutes()->getByName('nvl-mail-notification-bridge.webhooks'))->toBe($host)
+        ->and($router->getRoutes()->count())->toBe(1)
+        ->and(collect(app(GlobalNames::class)->diagnostics())->firstWhere('key', 'globals.mail-notification-bridge.route.nvl-mail-notification-bridge.webhooks'))
+        ->not->toBeNull();
 });

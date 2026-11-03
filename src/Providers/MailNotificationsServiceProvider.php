@@ -11,10 +11,12 @@ use Nvl\MailNotificationBridge\MailNotificationsManager;
 use Nvl\MailNotificationBridge\Notifications\Channels\MailNotificationsChannel;
 use Nvl\MailNotificationBridge\Webhooks\WebhooksServiceProvider;
 use Nvl\Support\Traits\MergesPackageConfiguration;
+use Nvl\Support\Traits\RegistersNamespacedResources;
 
 class MailNotificationsServiceProvider extends ServiceProvider
 {
     use MergesPackageConfiguration;
+    use RegistersNamespacedResources;
 
     public function register(): void
     {
@@ -55,7 +57,7 @@ class MailNotificationsServiceProvider extends ServiceProvider
                 __DIR__.'/../../resources/boost/skills' => base_path('.agents/skills'),
             ], 'nvl-mail-notification-bridge-skills');
             $this->publishes([
-                __DIR__.'/../../resources/config/nvl-mail-notification-bridge.php' => $this->app->configPath('nvl-mail-notification-bridge.php'),
+                __DIR__.'/../../config/nvl-mail-notification-bridge.php' => $this->app->configPath('nvl-mail-notification-bridge.php'),
             ], 'nvl-mail-notification-bridge-config');
         }
     }

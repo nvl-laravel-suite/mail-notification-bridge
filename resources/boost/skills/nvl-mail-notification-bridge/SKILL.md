@@ -9,7 +9,7 @@ description: Use when a Laravel app consumes a remote Mail Notifications HTTP se
 
 This package is the **remote HTTP consumer**. The host owns authorization, content and business models; the service owns delivery, providers, sender defaults and retention. For embedded delivery in this Laravel app, use `nvl/mail-notifications` instead. Do not install both by default. This bridge needs no provider credentials, Media, broker, editor or dashboard.
 
-Before editing, confirm PHP 8.4+/Laravel 13, installed package versions and the host's conventions. Read [installation](references/installation.md) for exact config, commands and publication tags; [API](references/api.md) for signatures. Use public services/traits, not internal receipt jobs as a submission API.
+Before editing, confirm PHP 8.4+/Laravel 13, installed package versions and the host's conventions. Read the [consumer guide map](references/usage.md), [installation](references/installation.md) for exact config, commands and publication tags; [API](references/api.md) for signatures. Use public services/traits, not internal receipt jobs as a submission API.
 
 ## Select the workflow
 

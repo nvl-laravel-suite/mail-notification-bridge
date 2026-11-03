@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nvl\MailNotificationBridge\Webhooks\Console;
+namespace Nvl\MailNotificationBridge\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
