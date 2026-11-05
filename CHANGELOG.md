@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Reject redirected and other non-successful API responses, including void mutations, and reject empty JSON lists as object envelopes while preserving HTTP exceptions and nested response arrays.
+- Require patched Symfony HTTP Foundation 7.4.23+/8.1.11+ and MIME 8.1.10+ for the bridge's direct runtime dependencies.
+
 ## [7.0.0] - 2026-11-03
 
 - Adopt the reviewed NVL 7 family for PHP 8.4+ and Laravel 13, with compatible required and optional NVL peers. Review the package upgrade guide before deployment.

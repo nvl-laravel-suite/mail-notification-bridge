@@ -152,4 +152,42 @@ test('invalid remote JSON envelopes fail explicitly without being returned as su
     Http::fake(['service.test/*' => Http::response($body, 200)]);
     $client = new MailNotificationsClient('https://service.test/api/v1', 'test-key');
     expect(fn () => $client->message('42'))->toThrow(RuntimeException::class, 'JSON object');
-})->with(['null' => [null], 'invalid' => ['not-json'], 'number' => ['42'], 'list' => [['unkeyed']]]);
+})->with(['null' => [null], 'invalid' => ['not-json'], 'number' => ['42'], 'list' => [['unkeyed']], 'empty list' => ['[]']]);
+
+test('successful object envelopes retain nested arrays and allow an empty object', function (string $body, array $expected): void {
+    Http::fake(['service.test/*' => Http::response($body, 200)]);
+
+    expect((new MailNotificationsClient('https://service.test/api/v1', 'test-key'))->message('42'))->toBe($expected);
+})->with([
+    'empty object' => ['{}', []],
+    'nested envelope' => ['{"data":{"id":"42","tags":["receipt"]},"meta":{}}', ['data' => ['id' => '42', 'tags' => ['receipt']], 'meta' => []]],
+]);
+
+test('redirects cannot be reported as successful API operations', function (string $method, array $arguments): void {
+    Http::fake(['*' => Http::response(['data' => ['id' => 'pretend-success']], 302, ['Location' => 'https://untrusted.test/messages'])]);
+    $client = new MailNotificationsClient('https://service.test/api/v1', 'test-key');
+
+    expect(fn () => $client->{$method}(...$arguments))->toThrow(RuntimeException::class, 'successful response');
+    Http::assertSentCount(1);
+})->with([
+    'read' => ['message', ['42']],
+    'send' => ['send', [['subject' => 'Receipt', 'text' => 'Ready'], 'stable-key']],
+    'remove asset' => ['archiveAsset', ['42']],
+    'remove flag' => ['deleteFlag', ['42']],
+    'remove opt-out' => ['deleteMarketingOptOut', ['42']],
+    'remove webhook' => ['deleteWebhookEndpoint', ['42']],
+    'revoke key' => ['revokeKey', ['42']],
+]);
+
+test('failed API responses retain their HTTP exception and status without replay', function (int $status): void {
+    Http::fake(['service.test/*' => Http::response(['message' => 'Rejected'], $status)]);
+    $client = new MailNotificationsClient('https://service.test/api/v1', 'test-key');
+
+    try {
+        $client->message('42');
+        test()->fail('An unsuccessful API response was accepted.');
+    } catch (RequestException $exception) {
+        expect($exception->response->status())->toBe($status);
+    }
+    Http::assertSentCount(1);
+})->with([401, 429, 503]);

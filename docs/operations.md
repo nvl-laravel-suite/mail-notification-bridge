@@ -2,7 +2,7 @@
 
 ## Transport and retry safety
 
-The client uses Laravel HTTP with 5-second connect and 30-second response timeouts by default, disables redirects, and does not automatically retry mutations. HTTP failures throw `RequestException`; connection/timeouts can throw `ConnectionException`. A timeout is an **unknown outcome**, not proof that the service rejected the send. Reuse the same operation key and exact prepared payload; inspect history when needed. Preserve service validation/rate-limit errors rather than blindly retrying every 4xx.
+The client uses Laravel HTTP with 5-second connect and 30-second response timeouts by default, disables redirects, and does not automatically retry mutations. HTTP 4xx/5xx responses throw `RequestException`; redirects and other non-2xx responses throw `RuntimeException`, as do non-object JSON envelopes (including empty lists). Connection/timeouts can throw `ConnectionException`. Successful object envelopes retain their nested arrays, and void mutations accept successful empty responses. A timeout is an **unknown outcome**, not proof that the service rejected the send. Reuse the same operation key and exact prepared payload; inspect history when needed. Preserve service validation/rate-limit errors rather than blindly retrying every 4xx.
 
 The built-in queued notification uses three attempts and `[10, 60]` backoff and dispatches after commit. Your own host jobs need a bounded retry policy and persisted logical keys/payloads. Starting a new key on every job attempt defeats service idempotency. Worker timeouts must exceed the bounded HTTP request and remain shorter than your queue's visibility/retry interval.
 

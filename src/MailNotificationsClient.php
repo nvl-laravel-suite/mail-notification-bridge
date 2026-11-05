@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Nvl\MailNotificationBridge;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use RuntimeException;
+use stdClass;
 
 /** Prepared-content API operations preserving the service response envelope.
  * @api
@@ -31,7 +33,7 @@ class MailNotificationsClient
     public function send(array $message, string $idempotencyKey): array
     {
         return $this->responseMap($this->request()->asJson()->withHeaders(['Idempotency-Key' => $idempotencyKey])
-            ->post('/messages', $message)->throw()->json());
+            ->post('/messages', $message));
     }
 
     /** @return array<string, mixed> */
@@ -43,7 +45,7 @@ class MailNotificationsClient
         }
         try {
             return $this->responseMap($this->request()->attach('file', $stream, basename($path))
-                ->post('/assets', $name === null ? [] : ['name' => $name])->throw()->json());
+                ->post('/assets', $name === null ? [] : ['name' => $name]));
         } finally {
             if (is_resource($stream)) {
                 fclose($stream);
@@ -80,7 +82,7 @@ class MailNotificationsClient
                 $request->attach($field, $stream, basename($path));
             }
 
-            return $this->responseMap($request->post($endpoint, $fields)->throw()->json());
+            return $this->responseMap($request->post($endpoint, $fields));
         } finally {
             foreach ($streams as $stream) {
                 if (is_resource($stream)) {
@@ -93,13 +95,13 @@ class MailNotificationsClient
     /** @return array<string, mixed> */
     public function message(string $id): array
     {
-        return $this->responseMap($this->request()->get('/messages/'.rawurlencode($id))->throw()->json());
+        return $this->responseMap($this->request()->get('/messages/'.rawurlencode($id)));
     }
 
     /** @return array<string, mixed> */
     public function events(string $id, int $page = 1, int $perPage = 50): array
     {
-        return $this->responseMap($this->request()->get('/messages/'.rawurlencode($id).'/events', ['page' => $page, 'per_page' => $perPage])->throw()->json());
+        return $this->responseMap($this->request()->get('/messages/'.rawurlencode($id).'/events', ['page' => $page, 'per_page' => $perPage]));
     }
 
     /**
@@ -108,7 +110,7 @@ class MailNotificationsClient
      */
     public function messages(array $filters = []): array
     {
-        return $this->responseMap($this->request()->get('/messages', $filters)->throw()->json());
+        return $this->responseMap($this->request()->get('/messages', $filters));
     }
 
     /**
@@ -117,24 +119,24 @@ class MailNotificationsClient
      */
     public function marketingOptOuts(array $filters = []): array
     {
-        return $this->responseMap($this->request()->get('/marketing-opt-outs', $filters)->throw()->json());
+        return $this->responseMap($this->request()->get('/marketing-opt-outs', $filters));
     }
 
     /** @return array<string, mixed> */
     public function putMarketingOptOut(string $email): array
     {
-        return $this->responseMap($this->request()->asJson()->put('/marketing-opt-outs', ['email' => $email])->throw()->json());
+        return $this->responseMap($this->request()->asJson()->put('/marketing-opt-outs', ['email' => $email]));
     }
 
     public function deleteMarketingOptOut(string $optOut): void
     {
-        $this->request()->delete('/marketing-opt-outs/'.rawurlencode($optOut))->throw();
+        $this->successfulResponse($this->request()->delete('/marketing-opt-outs/'.rawurlencode($optOut)));
     }
 
     /** @return array<string, mixed> */
     public function client(): array
     {
-        return $this->responseMap($this->request()->get('/client')->throw()->json());
+        return $this->responseMap($this->request()->get('/client'));
     }
 
     /**
@@ -143,13 +145,13 @@ class MailNotificationsClient
      */
     public function updateClient(array $settings): array
     {
-        return $this->responseMap($this->request()->asJson()->patch('/client', $settings)->throw()->json());
+        return $this->responseMap($this->request()->asJson()->patch('/client', $settings));
     }
 
     /** @return array<string, mixed> */
     public function configuration(): array
     {
-        return $this->responseMap($this->request()->get('/configuration')->throw()->json());
+        return $this->responseMap($this->request()->get('/configuration'));
     }
 
     /**
@@ -158,19 +160,19 @@ class MailNotificationsClient
      */
     public function assets(array $filters = []): array
     {
-        return $this->responseMap($this->request()->get('/assets', $filters)->throw()->json());
+        return $this->responseMap($this->request()->get('/assets', $filters));
     }
 
     /** @return array<string, mixed> */
     public function asset(string $asset): array
     {
-        return $this->responseMap($this->request()->get('/assets/'.rawurlencode($asset))->throw()->json());
+        return $this->responseMap($this->request()->get('/assets/'.rawurlencode($asset)));
     }
 
     /** @return array<string, mixed> */
     public function publishAsset(string $asset): array
     {
-        return $this->responseMap($this->request()->asJson()->post('/assets/'.rawurlencode($asset).'/publish')->throw()->json());
+        return $this->responseMap($this->request()->asJson()->post('/assets/'.rawurlencode($asset).'/publish'));
     }
 
     /**
@@ -179,13 +181,13 @@ class MailNotificationsClient
      */
     public function flags(array $filters = []): array
     {
-        return $this->responseMap($this->request()->get('/flags', $filters)->throw()->json());
+        return $this->responseMap($this->request()->get('/flags', $filters));
     }
 
     /** @return array<string, mixed> */
     public function flag(string $flag): array
     {
-        return $this->responseMap($this->request()->get('/flags/'.rawurlencode($flag))->throw()->json());
+        return $this->responseMap($this->request()->get('/flags/'.rawurlencode($flag)));
     }
 
     /**
@@ -194,7 +196,7 @@ class MailNotificationsClient
      */
     public function createFlag(array $data): array
     {
-        return $this->responseMap($this->request()->asJson()->post('/flags', $data)->throw()->json());
+        return $this->responseMap($this->request()->asJson()->post('/flags', $data));
     }
 
     /**
@@ -203,35 +205,35 @@ class MailNotificationsClient
      */
     public function updateFlag(string $flag, array $data): array
     {
-        return $this->responseMap($this->request()->asJson()->patch('/flags/'.rawurlencode($flag), $data)->throw()->json());
+        return $this->responseMap($this->request()->asJson()->patch('/flags/'.rawurlencode($flag), $data));
     }
 
     /** @return array<string, mixed> */
     public function cancelMessage(string $message): array
     {
-        return $this->responseMap($this->request()->asJson()->post('/messages/'.rawurlencode($message).'/cancel')->throw()->json());
+        return $this->responseMap($this->request()->asJson()->post('/messages/'.rawurlencode($message).'/cancel'));
     }
 
     /** @return array<string, mixed> */
     public function retryMessage(string $message): array
     {
-        return $this->responseMap($this->request()->asJson()->post('/messages/'.rawurlencode($message).'/retry')->throw()->json());
+        return $this->responseMap($this->request()->asJson()->post('/messages/'.rawurlencode($message).'/retry'));
     }
 
     /** @return array<string, mixed> */
     public function messageProvider(string $message): array
     {
-        return $this->responseMap($this->request()->get('/messages/'.rawurlencode($message).'/provider')->throw()->json());
+        return $this->responseMap($this->request()->get('/messages/'.rawurlencode($message).'/provider'));
     }
 
     public function archiveAsset(string $asset): void
     {
-        $this->request()->delete('/assets/'.rawurlencode($asset))->throw();
+        $this->successfulResponse($this->request()->delete('/assets/'.rawurlencode($asset)));
     }
 
     public function deleteFlag(string $flag): void
     {
-        $this->request()->delete('/flags/'.rawurlencode($flag))->throw();
+        $this->successfulResponse($this->request()->delete('/flags/'.rawurlencode($flag)));
     }
 
     public function query(): MessagesQuery
@@ -287,7 +289,7 @@ class MailNotificationsClient
      */
     public function webhookEndpoints(array $filters = []): array
     {
-        return $this->responseMap($this->request()->get('/webhook-endpoints', $filters)->throw()->json());
+        return $this->responseMap($this->request()->get('/webhook-endpoints', $filters));
     }
 
     /**
@@ -295,7 +297,7 @@ class MailNotificationsClient
      */
     public function webhookEndpoint(string $endpoint): array
     {
-        return $this->responseMap($this->request()->get('/webhook-endpoints/'.rawurlencode($endpoint))->throw()->json());
+        return $this->responseMap($this->request()->get('/webhook-endpoints/'.rawurlencode($endpoint)));
     }
 
     /**
@@ -304,7 +306,7 @@ class MailNotificationsClient
      */
     public function createWebhookEndpoint(array $data): array
     {
-        return $this->responseMap($this->request()->asJson()->post('/webhook-endpoints', $data)->throw()->json());
+        return $this->responseMap($this->request()->asJson()->post('/webhook-endpoints', $data));
     }
 
     /**
@@ -313,7 +315,7 @@ class MailNotificationsClient
      */
     public function updateWebhookEndpoint(string $endpoint, array $data): array
     {
-        return $this->responseMap($this->request()->asJson()->patch('/webhook-endpoints/'.rawurlencode($endpoint), $data)->throw()->json());
+        return $this->responseMap($this->request()->asJson()->patch('/webhook-endpoints/'.rawurlencode($endpoint), $data));
     }
 
     /**
@@ -321,7 +323,7 @@ class MailNotificationsClient
      */
     public function rotateWebhookSecret(string $endpoint): array
     {
-        return $this->responseMap($this->request()->asJson()->post('/webhook-endpoints/'.rawurlencode($endpoint).'/rotate-secret')->throw()->json());
+        return $this->responseMap($this->request()->asJson()->post('/webhook-endpoints/'.rawurlencode($endpoint).'/rotate-secret'));
     }
 
     /**
@@ -330,12 +332,12 @@ class MailNotificationsClient
      */
     public function webhookDeliveries(string $endpoint, array $filters = []): array
     {
-        return $this->responseMap($this->request()->get('/webhook-endpoints/'.rawurlencode($endpoint).'/deliveries', $filters)->throw()->json());
+        return $this->responseMap($this->request()->get('/webhook-endpoints/'.rawurlencode($endpoint).'/deliveries', $filters));
     }
 
     public function deleteWebhookEndpoint(string $endpoint): void
     {
-        $this->request()->delete('/webhook-endpoints/'.rawurlencode($endpoint))->throw();
+        $this->successfulResponse($this->request()->delete('/webhook-endpoints/'.rawurlencode($endpoint)));
     }
 
     /**
@@ -344,7 +346,7 @@ class MailNotificationsClient
      */
     public function keys(array $filters = []): array
     {
-        return $this->responseMap($this->request()->get('/keys', $filters)->throw()->json());
+        return $this->responseMap($this->request()->get('/keys', $filters));
     }
 
     /**
@@ -353,20 +355,22 @@ class MailNotificationsClient
      */
     public function createKey(array $data): array
     {
-        return $this->responseMap($this->request()->asJson()->post('/keys', $data)->throw()->json());
+        return $this->responseMap($this->request()->asJson()->post('/keys', $data));
     }
 
     public function revokeKey(string $key): void
     {
-        $this->request()->delete('/keys/'.rawurlencode($key))->throw();
+        $this->successfulResponse($this->request()->delete('/keys/'.rawurlencode($key)));
     }
 
     /** Validate the remote JSON envelope before exposing it to callers.
      * @return array<string, mixed>
      */
-    private function responseMap(mixed $value): array
+    private function responseMap(Response $response): array
     {
-        if (! is_array($value)) {
+        $this->successfulResponse($response);
+        $value = $response->json();
+        if (! $response->object() instanceof stdClass || ! is_array($value)) {
             throw new RuntimeException('The Mail Notifications API did not return a JSON object.');
         }
         $map = [];
@@ -378,6 +382,17 @@ class MailNotificationsClient
         }
 
         return $map;
+    }
+
+    /** Preserve HTTP errors and reject other non-success outcomes without replay. */
+    private function successfulResponse(Response $response): Response
+    {
+        $response->throw();
+        if (! $response->successful()) {
+            throw new RuntimeException('The Mail Notifications API did not return a successful response.');
+        }
+
+        return $response;
     }
 
     private function request(): PendingRequest

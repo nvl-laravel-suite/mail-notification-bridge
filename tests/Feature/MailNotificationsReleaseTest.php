@@ -2,8 +2,28 @@
 
 declare(strict_types=1);
 
+use Composer\Semver\Semver;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+
+test('bridge installations exclude affected direct Symfony dependencies', function (string $dependency, string $version, bool $accepted): void {
+    $manifest = json_decode(file_get_contents(dirname(__DIR__, 2).'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
+
+    expect(Semver::satisfies($version, $manifest['require'][$dependency]))->toBe($accepted);
+})->with([
+    'Foundation previous Symfony 7 floor' => ['symfony/http-foundation', '7.4.19', false],
+    'Foundation last affected Symfony 7 patch' => ['symfony/http-foundation', '7.4.22', false],
+    'Foundation patched Symfony 7 floor' => ['symfony/http-foundation', '7.4.23', true],
+    'Foundation later Symfony 7 patch' => ['symfony/http-foundation', '7.4.24', true],
+    'Foundation previous Symfony 8 floor' => ['symfony/http-foundation', '8.1.7', false],
+    'Foundation last affected Symfony 8 patch' => ['symfony/http-foundation', '8.1.10', false],
+    'Foundation patched Symfony 8 floor' => ['symfony/http-foundation', '8.1.11', true],
+    'Foundation later Symfony 8 minor' => ['symfony/http-foundation', '8.2.0', true],
+    'Mime original Symfony 8 floor' => ['symfony/mime', '8.0.0', false],
+    'Mime last affected patch' => ['symfony/mime', '8.1.9', false],
+    'Mime patched floor' => ['symfony/mime', '8.1.10', true],
+    'Mime later patch' => ['symfony/mime', '8.1.11', true],
+]);
 
 function releaseFixture(): string
 {
