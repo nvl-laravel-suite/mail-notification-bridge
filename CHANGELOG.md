@@ -2,10 +2,18 @@
 
 ## [Unreleased]
 
+## [7.0.2] - 2026-11-11
+
 ### Fixed
 
 - Accept Symfony Mailer 7.4.12+ and MIME 7.4.22+ beside the Symfony 8 line, so an application that Laravel 13 resolves to Symfony 7.4 can install the bridge. The bridge uses no Symfony 8-only API.
 - The client key, the connection configuration and webhook signing secrets are marked sensitive, so exception traces and error reporters no longer carry them when argument capture is enabled.
+
+<!-- NVL GENERATED CHANGES START -->
+### Changed
+
+- correct bridge configuration and packaging
+<!-- NVL GENERATED CHANGES END -->
 
 ## [7.0.1] - 2026-11-05
 
