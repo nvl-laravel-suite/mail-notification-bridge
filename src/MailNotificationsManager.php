@@ -15,7 +15,7 @@ final class MailNotificationsManager
     private array $connections = [];
 
     /** @param array<string, mixed> $config */
-    public function __construct(private readonly array $config) {}
+    public function __construct(#[\SensitiveParameter] private readonly array $config) {}
 
     /** @return array<string, mixed> */
     public function configuration(string $name = 'default'): array

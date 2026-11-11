@@ -10,4 +10,6 @@
 /vendor export-ignore
 /.temp export-ignore
 /phpstan.neon* export-ignore
+/.DS_Store export-ignore
+/**/.DS_Store export-ignore
 # END NVL COMPOSER EXPORTS

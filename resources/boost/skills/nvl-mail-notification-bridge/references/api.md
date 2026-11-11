@@ -54,7 +54,7 @@ public const string WebhookReceipts="nvl_mail_notification_bridge_webhook_receip
 
 ```text
 class Nvl\MailNotificationBridge\MailNotificationsClient
-public function __construct(string $baseUrl, string $token, int $connectTimeout=5, int $timeout=30): mixed
+public function __construct(string $baseUrl, #[SensitiveParameter()] string $token, int $connectTimeout=5, int $timeout=30): mixed
 public function archiveAsset(string $asset): void
 public function asset(string $asset): array
 @return array<string, mixed>
@@ -145,7 +145,7 @@ public function webhookEndpoints(array $filters=[]): array
 
 ```text
 final class Nvl\MailNotificationBridge\MailNotificationsManager
-public function __construct(array $config): mixed
+public function __construct(#[SensitiveParameter()] array $config): mixed
 @param array<string, mixed> $config
 public function configuration(string $name="default"): array
 @return array<string, mixed>

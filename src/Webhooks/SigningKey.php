@@ -6,7 +6,7 @@ namespace Nvl\MailNotificationBridge\Webhooks;
 
 class SigningKey
 {
-    public static function decode(mixed $secret): ?string
+    public static function decode(#[\SensitiveParameter] mixed $secret): ?string
     {
         if (! is_string($secret) || ! str_starts_with($secret, 'whsec_') || strlen($secret) > 256) {
             return null;

@@ -73,7 +73,7 @@ class VerifyWebhook
         return $next($request);
     }
 
-    private function validSignature(string $content, string $header, mixed $secrets): bool
+    private function validSignature(string $content, string $header, #[\SensitiveParameter] mixed $secrets): bool
     {
         if (! is_array($secrets) || count($secrets) > 10 || $secrets === []) {
             return false;

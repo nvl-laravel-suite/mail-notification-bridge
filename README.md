@@ -11,7 +11,7 @@ A Laravel consumer of the Mail Notifications HTTP API. Send host-rendered HTML/C
 
 Choose the bridge for remote consumption. Choose the delivery engine for embedded delivery or building the service itself. Installing both is not required. The bridge depends on `nvl/core`, not the engine, Media, a broker or a template editor. It does not install a dashboard or provider webhook receiver. Laravel owns your views and templates; the service accepts prepared content.
 
-Requires PHP 8.4+ and Laravel 13. Install from your configured NVL Composer repository:
+Requires PHP 8.4+ and Laravel 13, with either Symfony line Laravel 13 supports: Mailer 7.4.12+ or 8.0+, and Mime 7.4.22+ or 8.1.10+. Install from your configured NVL Composer repository:
 
 ```bash
 composer require nvl/mail-notification-bridge:^7.0

@@ -23,6 +23,12 @@ test('bridge installations exclude affected direct Symfony dependencies', functi
     'Mime last affected patch' => ['symfony/mime', '8.1.9', false],
     'Mime patched floor' => ['symfony/mime', '8.1.10', true],
     'Mime later patch' => ['symfony/mime', '8.1.11', true],
+    'Mime earlier Symfony 7 minor' => ['symfony/mime', '7.3.9', false],
+    'Mime last affected Symfony 7 patch' => ['symfony/mime', '7.4.21', false],
+    'Mime patched Symfony 7 floor' => ['symfony/mime', '7.4.22', true],
+    'Mailer last affected Symfony 7 patch' => ['symfony/mailer', '7.4.11', false],
+    'Mailer patched Symfony 7 floor' => ['symfony/mailer', '7.4.12', true],
+    'Mailer Symfony 8' => ['symfony/mailer', '8.0.12', true],
 ]);
 
 function releaseFixture(): string

@@ -17,8 +17,8 @@
         "nvl/core": "^7.0",
         "php": "^8.4",
         "symfony/http-foundation": "^7.4.23 || ^8.1.11",
-        "symfony/mailer": "^8.0",
-        "symfony/mime": "^8.1.10"
+        "symfony/mailer": "^7.4.12 || ^8.0",
+        "symfony/mime": "^7.4.22 || ^8.1.10"
     },
     "require-dev": {
         "larastan/larastan": "^3.10",
@@ -77,7 +77,9 @@
             "/tests",
             "/vendor",
             "/.temp",
-            "/phpstan.neon*"
+            "/phpstan.neon*",
+            "/.DS_Store",
+            "/**/.DS_Store"
         ]
     },
     "authors": [

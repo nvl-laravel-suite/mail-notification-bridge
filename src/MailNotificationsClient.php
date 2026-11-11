@@ -16,7 +16,7 @@ use stdClass;
  */
 class MailNotificationsClient
 {
-    public function __construct(private readonly string $baseUrl, private readonly string $token, private readonly int $connectTimeout = 5, private readonly int $timeout = 30)
+    public function __construct(private readonly string $baseUrl, #[\SensitiveParameter] private readonly string $token, private readonly int $connectTimeout = 5, private readonly int $timeout = 30)
     {
         if (trim($baseUrl) === '' || trim($token) === '') {
             throw new InvalidArgumentException('Configure the Mail Notifications API URL and client key.');

@@ -7,6 +7,9 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Nvl\MailNotificationBridge\MailNotificationsClient;
+use Nvl\MailNotificationBridge\MailNotificationsManager;
+use Nvl\MailNotificationBridge\Webhooks\Http\VerifyWebhook;
+use Nvl\MailNotificationBridge\Webhooks\SigningKey;
 
 beforeEach(function () {
     Http::preventStrayRequests();
@@ -191,3 +194,29 @@ test('failed API responses retain their HTTP exception and status without replay
     }
     Http::assertSentCount(1);
 })->with([401, 429, 503]);
+
+test('the client key and signing secrets are withheld from exception traces', function () {
+    $previous = ini_set('zend.exception_ignore_args', '0');
+
+    try {
+        new MailNotificationsClient('', 'integration-secret');
+        $this->fail('An empty API URL should be rejected.');
+    } catch (InvalidArgumentException $exception) {
+        expect($exception->getTrace()[0]['args'][1])->toBeInstanceOf(SensitiveParameterValue::class)
+            ->and($exception->getTraceAsString())->not->toContain('integration-sec');
+    } finally {
+        if ($previous !== false) {
+            ini_set('zend.exception_ignore_args', $previous);
+        }
+    }
+
+    foreach ([
+        [MailNotificationsManager::class, '__construct', 'config'],
+        [SigningKey::class, 'decode', 'secret'],
+        [VerifyWebhook::class, 'validSignature', 'secrets'],
+    ] as [$class, $method, $parameter]) {
+        $parameters = collect((new ReflectionMethod($class, $method))->getParameters())->keyBy(fn (ReflectionParameter $candidate): string => $candidate->getName());
+
+        expect($parameters[$parameter]->getAttributes(SensitiveParameter::class))->not->toBeEmpty($class.'::'.$method);
+    }
+});
