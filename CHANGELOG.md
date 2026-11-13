@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Dispatch webhook receipt jobs via per-connection commit callbacks on the configured inbox connection and isolate receipt deduplication writes safely.
+
 ## [7.0.2] - 2026-11-11
 
 ### Fixed

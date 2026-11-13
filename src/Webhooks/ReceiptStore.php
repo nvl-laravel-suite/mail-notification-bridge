@@ -11,6 +11,7 @@ use Illuminate\Database\Query\Builder;
 use Nvl\MailNotificationBridge\Definitions\Tables\MailNotificationBridgeTables;
 use Nvl\MailNotificationBridge\Webhooks\Jobs\ProcessWebhookReceipt;
 use Nvl\Support\Config\PackageStorage;
+use Nvl\Support\Events\ConnectionCommitCallbacks;
 use Throwable;
 
 class ReceiptStore
@@ -43,7 +44,14 @@ class ReceiptStore
             if (! is_string($receipt->payload_hash) || ! hash_equals($receipt->payload_hash, hash('sha256', $body))) {
                 throw new ReceiptConflict;
             }
-            $this->database->connection(PackageStorage::connection('mail-notification-bridge'))->afterCommit(fn () => $this->enqueue($connection, $eventId));
+            $inboxConnection = $this->database->connection(PackageStorage::connection('mail-notification-bridge'));
+            if (app()->bound(ConnectionCommitCallbacks::class)) {
+                app(ConnectionCommitCallbacks::class)->afterCommit($inboxConnection, function () use ($connection, $eventId): void {
+                    $this->enqueue($connection, $eventId);
+                });
+            } else {
+                $inboxConnection->afterCommit(fn () => $this->enqueue($connection, $eventId));
+            }
 
             return $created;
         });

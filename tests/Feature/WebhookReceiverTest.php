@@ -460,3 +460,19 @@ test('signed callbacks reject reference IDs outside the service character and wh
     $this->assertDatabaseCount('nvl_mail_notification_bridge_webhook_receipts', 0);
     Queue::assertNothingPushed();
 })->with([str_repeat('é', 192), str_repeat('a', 192), ' leading', "trailing\t", "embedded\x00control", "embedded\nnewline"]);
+
+test('an open transaction on an unrelated connection does not suppress webhook receipt dispatch on rollback', function () {
+    bootWebhookReceiver();
+    config([
+        'database.connections.unrelated' => ['driver' => 'sqlite', 'database' => ':memory:'],
+    ]);
+    Queue::fake([ProcessWebhookReceipt::class]);
+    $body = WebhookFixture::body();
+
+    DB::connection('unrelated')->beginTransaction();
+    WebhookFixture::post($this, $body)->assertAccepted();
+    DB::connection('unrelated')->rollBack();
+
+    $this->assertDatabaseCount('nvl_mail_notification_bridge_webhook_receipts', 1);
+    Queue::assertPushed(ProcessWebhookReceipt::class, 1);
+});

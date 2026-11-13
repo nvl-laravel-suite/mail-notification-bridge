@@ -26,7 +26,7 @@ class MailNotificationsServiceProvider extends ServiceProvider
 
         $this->app->register(WebhooksServiceProvider::class);
 
-        $this->app->singleton(MailNotificationsManager::class, function (Application $app): MailNotificationsManager {
+        $this->app->scoped(MailNotificationsManager::class, function (Application $app): MailNotificationsManager {
             $value = $app->make('config')->get('nvl-mail-notification-bridge', []);
             if (! is_array($value)) {
                 throw new \InvalidArgumentException('Bridge configuration must be a map.');
@@ -41,7 +41,7 @@ class MailNotificationsServiceProvider extends ServiceProvider
 
             return new MailNotificationsManager($configuration);
         });
-        $this->app->singleton(MailNotificationsClient::class, fn (Application $app): MailNotificationsClient => $app->make(MailNotificationsManager::class)->connection());
+        $this->app->scoped(MailNotificationsClient::class, fn (Application $app): MailNotificationsClient => $app->make(MailNotificationsManager::class)->connection());
     }
 
     public function boot(): void
