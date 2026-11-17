@@ -2,10 +2,18 @@
 
 ## [Unreleased]
 
+## [7.1.0] - 2026-11-17
+
 ### Fixed
 
 - The history guide lists only the message types the service accepts, `transactional` and `marketing`; `notification` was never valid.
 - The webhook receipt and inbox storage tests run on the database engine selected for the run, including a separate inbox connection, instead of always using in-memory SQLite.
+
+<!-- NVL GENERATED CHANGES START -->
+### Changed
+
+- consumer-audit fixes across the suite, UTC timestamps, core/forms release ordering
+<!-- NVL GENERATED CHANGES END -->
 
 ## [7.0.3] - 2026-11-13
 
