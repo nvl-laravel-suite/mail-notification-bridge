@@ -11,23 +11,23 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Nvl\MailNotificationBridge\Tests\Fixtures\Webhooks\WebhookFixture;
+use Nvl\MailNotificationBridge\Tests\TestCase;
 use Nvl\MailNotificationBridge\Webhooks\Events\MailNotificationReceived;
 use Nvl\MailNotificationBridge\Webhooks\Jobs\ProcessWebhookReceipt;
 use Nvl\MailNotificationBridge\Webhooks\ReceiptStore;
 use Nvl\MailNotificationBridge\Webhooks\WebhooksServiceProvider;
+use Nvl\Support\Config\PackageStorage;
 
 beforeEach(function () {
     app()->singleton(ExceptionHandler::class, Handler::class);
+    $this->useSelectedDatabase();
     config([
-        'database.default' => 'sqlite',
-        'database.connections.sqlite' => ['driver' => 'sqlite', 'database' => ':memory:', 'foreign_key_constraints' => true],
         'queue.default' => 'database',
         'queue.connections.database' => ['driver' => 'database', 'table' => 'jobs', 'queue' => 'default', 'retry_after' => 90],
         'nvl-mail-notification-bridge.client_id' => WebhookFixture::CLIENT_ID,
         'nvl-mail-notification-bridge.webhook_secrets' => [WebhookFixture::SECRET],
         'nvl-mail-notification-bridge.webhooks' => ['enabled' => true, 'path' => 'mail-notifications/webhooks/{connection?}', 'queue' => 'default', 'connection' => null, 'tolerance' => 300, 'max_bytes' => 65536],
     ]);
-    DB::purge('sqlite');
     $this->travelTo('2026-11-01 12:00:00 UTC');
 });
 
@@ -42,6 +42,11 @@ function bootWebhookReceiver(): void
     }
     app('router')->getRoutes()->refreshNameLookups();
 }
+
+test('receipt persistence runs on the engine selected for this run', function () {
+    expect(DB::connection()->getDriverName())->toBe(TestCase::selectedDriver())
+        ->and(DB::connection(PackageStorage::connection('mail-notification-bridge'))->getDriverName())->toBe(TestCase::selectedDriver());
+});
 
 test('the webhook route is disabled unless the consumer opts in', function () {
     config(['nvl-mail-notification-bridge.webhooks.enabled' => false]);
@@ -232,7 +237,7 @@ test('recovery queues lost dispatches and expired processing leases while skippi
     $this->artisan('nvl:mail-notification-bridge:webhooks:recover')->assertSuccessful();
     Queue::assertPushed(ProcessWebhookReceipt::class, 1);
 
-    DB::table('nvl_mail_notification_bridge_webhook_receipts')->update(['status' => 'processing', 'lease_until' => now()->subSecond(), 'lease_token' => 'expired', 'enqueue_until' => null, 'attempts' => 1]);
+    DB::table('nvl_mail_notification_bridge_webhook_receipts')->update(['status' => 'processing', 'lease_until' => now()->subSecond(), 'lease_token' => '00000000-0000-4000-8000-0000000000ff', 'enqueue_until' => null, 'attempts' => 1]);
     $this->artisan('nvl:mail-notification-bridge:webhooks:recover')->assertSuccessful();
     Queue::assertPushed(ProcessWebhookReceipt::class, 2);
     app()->call([new ProcessWebhookReceipt('default', WebhookFixture::EVENT_ID), 'handle']);

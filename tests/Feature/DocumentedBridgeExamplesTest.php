@@ -137,3 +137,12 @@ test('the documented callback provisioning leaves delivery disabled until its re
         && $request['events'] === ['message.submitted', 'message.delivered', 'message.failed'] && $request['enabled'] === false);
     Http::assertSentCount(1);
 });
+
+test('both history guides advertise only the message types the service accepts', function (string $path): void {
+    $contents = file_get_contents(__DIR__.'/../../'.$path);
+    expect($contents)->toBeString()
+        ->and(preg_match('/^`type` distinguishes (.+?);/m', (string) $contents, $match))->toBe(1);
+    preg_match_all('/`([a-z_]+)`/', $match[1], $types);
+
+    expect($types[1])->toBe(['transactional', 'marketing']);
+})->with(['docs/history.md', 'resources/boost/skills/nvl-mail-notification-bridge/references/history.md']);

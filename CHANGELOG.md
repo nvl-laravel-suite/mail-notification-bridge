@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- The history guide lists only the message types the service accepts, `transactional` and `marketing`; `notification` was never valid.
+- The webhook receipt and inbox storage tests run on the database engine selected for the run, including a separate inbox connection, instead of always using in-memory SQLite.
+
 ## [7.0.3] - 2026-11-13
 
 ### Fixed

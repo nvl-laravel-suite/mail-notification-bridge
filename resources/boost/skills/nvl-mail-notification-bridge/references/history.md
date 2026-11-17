@@ -42,6 +42,6 @@ Query builders are immutable: retain the returned instance when adding a filter.
 
 ## Classification is not consent
 
-`type` distinguishes `transactional`, `marketing` and `notification`; `language`, `category`, `tags` and structured `metadata` describe the send. They do not grant permission to email somebody. Keep sensitive personal data out of metadata and logs.
+`type` distinguishes `transactional` and `marketing`; `language`, `category`, `tags` and structured `metadata` describe the send. They do not grant permission to email somebody. Keep sensitive personal data out of metadata and logs.
 
 The API client's `marketingOptOuts`, `putMarketingOptOut` and `deleteMarketingOptOut` manage service client marketing preferences. These differ from provider suppressions for bounces/complaints. Do not bypass either with a transactional label or treat a provider suppression as a marketing unsubscribe. The service enforces its own applicable policies; the host remains responsible for consent and business classification.

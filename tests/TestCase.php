@@ -8,6 +8,7 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\TestCase as LaravelTestCase;
+use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends LaravelTestCase
 {
@@ -30,6 +31,36 @@ abstract class TestCase extends LaravelTestCase
         $app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    /**
+     * Engine selected for this run through DB_CONNECTION; in-memory SQLite when none is selected.
+     */
+    public static function selectedDriver(): string
+    {
+        $connection = getenv('DB_CONNECTION');
+
+        return is_string($connection) && $connection !== '' ? $connection : 'sqlite';
+    }
+
+    /**
+     * Point the default connection, and any named inbox connections, at the selected engine with no tables.
+     * Inbox connections share the engine but use their own table prefix, so they stay isolated from the default.
+     */
+    protected function useSelectedDatabase(string ...$inboxConnections): void
+    {
+        $driver = self::selectedDriver();
+        $default = $driver === 'sqlite'
+            ? ['driver' => 'sqlite', 'database' => ':memory:', 'foreign_key_constraints' => true, 'prefix' => '']
+            : config('database.connections.'.$driver);
+        config(['database.default' => $driver, 'database.connections.'.$driver => $default]);
+        foreach ($inboxConnections as $connection) {
+            config(['database.connections.'.$connection => [...$default, 'prefix' => $connection.'_']]);
+        }
+        foreach ([$driver, ...$inboxConnections] as $connection) {
+            DB::purge($connection);
+            DB::connection($connection)->getSchemaBuilder()->dropAllTables();
+        }
     }
 
     protected function tearDown(): void
